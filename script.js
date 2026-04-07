@@ -49,6 +49,9 @@ function inputKey(key) {
             && input.value.length !== 0) { // only allow operators to be entered if previous element wasn't an operator
             input.value += `${key.innerText}`;
             decimalSeperator = true;
+        } else if (key.innerText === "-" && input.value[input.value.length - 1] !== "-") { // allows minus to be entered behind everything except another minus
+            input.value += `${key.innerText}`;
+            decimalSeperator = true;
         }
 
         if (key.innerText === "." 
@@ -75,6 +78,7 @@ function inputKey(key) {
         if (key.innerText === "CH") { // clear history
             history.innerHTML = "";
             localStorage.removeItem("calculatorHistory");
+            historyArray = [];
         };
     });
 };
