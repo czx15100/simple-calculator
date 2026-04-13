@@ -26,8 +26,12 @@ function inputKey(key) {
         displayOutput = false;
 
         if (Number(key.innerText) < 10 && Number(key.innerText) > 0) { // always allow non-zero digits to be entered
-            input.value += `${key.innerText}`;
-            leadingZero = false;
+            if (leadingZero) {
+                input.value = input.value.slice(0, -1) + key.innerText;
+                leadingZero = false;
+            } else {
+                input.value += `${key.innerText}`;
+            }
         };
 
         if (key.innerText === "0") { 
@@ -80,6 +84,22 @@ function inputKey(key) {
             localStorage.removeItem("calculatorHistory");
             historyArray = [];
         };
+
+        if (key.innerText === "BACK") { // backspace
+            input.value = input.value.slice(0, input.value.length - 1);
+            // recheck decimal point
+            const lastOperatorIndex = Math.max(
+                input.value.lastIndexOf('+'), 
+                input.value.lastIndexOf('-'), 
+                input.value.lastIndexOf('*'), 
+                input.value.lastIndexOf('/')
+            );
+            const currentNumber = input.value.slice(lastOperatorIndex + 1);
+            decimalSeperator = !currentNumber.includes('.');
+
+            // recheck leading zero
+            leadingZero = (currentNumber === "0");
+        }
     });
 };
 
@@ -91,7 +111,7 @@ function parseOperations(expression) {
 }
 
 function saveOutput(output) {
-    history.innerHTML = `<li class="results">${output}<li>` + history.innerHTML;
+    history.innerHTML = `<li class="results">${output}</li>` + history.innerHTML;
 }
 
 function saveToLocalStorage(newEntry) {
@@ -101,6 +121,6 @@ function saveToLocalStorage(newEntry) {
 
 function renderHistory(historyArray) {
     historyArray.forEach((entry) => {
-        history.innerHTML = `<li class="results">${entry}<li>` + history.innerHTML;
+        history.innerHTML = `<li class="results">${entry}</li>` + history.innerHTML;
     })
 }
